@@ -27,9 +27,9 @@ public class BookController {
     }
 
     @GetMapping(value = "/{reader}")
-    public String readersBooks(@PathVariable(value = "reader") String reader, Model model) {
+    public String readersBooks(@PathVariable(value = "reader") String reader) {
         List<Book> bookList = repository.findByReader(reader);
-        model.addAttribute("books", bookList);
+     //   model.addAttribute("books", bookList);
         return "readingList";
     }
 
