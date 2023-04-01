@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
@@ -19,26 +20,60 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class BookControllerTests {
     @Mock
     BookRepository bookRepository;
-    @InjectMocks
-    BookController bookController= new BookController(bookRepository);
+    @Spy
+    BookController bookController = new BookController(bookRepository);
 
     @Test
-    public void argCapturetest(){
+    public void argCapturetest() {
         Book book1 = new Book();
         book1.setReader("Nishanth");
         book1.setTitle("Spring in Action");
         book1.setAuthor("James");
         book1.setDescription("nice book");
         List<Book> bookList = Arrays.asList(book1);
-        ArgumentCaptor<String>argumentCaptor= ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
         when(bookRepository.findByReader(argumentCaptor.capture())).thenReturn(bookList);
         bookController.readersBooks("Nishanth");
+        assertThat(argumentCaptor.getValue()).isEqualTo("Nishanth");
+        bookRepository.findAll();
+        verifyNoMoreInteractions(bookRepository);
+        bookRepository.findAll();
+        verify(bookRepository).findAll();
+
+    }
+
+    //spy
+    @Test
+    public void spyTest() {
+
+
+        when(bookController.readersBooks("nishanth")).thenReturn("Test");
+    }
+
+    @Test
+    public void answertest() {
+        Book book1 = new Book();
+        book1.setReader("Nishanth");
+        book1.setTitle("Spring in Action");
+        book1.setAuthor("James");
+        book1.setDescription("nice book");
+        List<Book> bookList = Arrays.asList(book1);
+        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+        when(bookRepository.findByReader(argumentCaptor.capture())).thenAnswer(invocationOnMock -> {
+            Object argument = invocationOnMock.getArgument(0);
+            if (argument.equals("Nishanth")) {
+                return bookList;
+            } else {
+                return null;
+            }
+        }).thenReturn(bookList);
+        bookController.readersBooks("Nisanth");
         assertThat(argumentCaptor.getValue()).isEqualTo("Nishanth");
     }
 
@@ -50,9 +85,9 @@ public class BookControllerTests {
         book1.setAuthor("James");
         book1.setDescription("nice book");
         List<Book> bookList = Arrays.asList(book1);
-        Model model=null;
+        Model model = null;
         when(bookRepository.findByReader("Nishanth")).thenReturn(bookList);
-        assertEquals(bookController.readersBooks("Nishanth"),"readingList");
+        assertEquals(bookController.readersBooks("Nishanth"), "readingList");
 
     }
 
