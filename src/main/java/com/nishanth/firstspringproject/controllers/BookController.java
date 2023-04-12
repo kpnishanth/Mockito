@@ -27,14 +27,19 @@ public class BookController {
     }
 
     @GetMapping(value = "/{reader}")
-    public String readersBooks(@PathVariable(value = "reader") String reader) {
+    public String readersBooks(@PathVariable(value = "reader") String reader,Model model) {
+        if(!reader.equalsIgnoreCase("Nishanth")){
+            model.addAttribute("title","title");
+            return "error";
+        }
         List<Book> bookList = repository.findByReader(reader);
-     //   model.addAttribute("books", bookList);
+        model.addAttribute("books", bookList);
         return "readingList";
     }
 
     @PostMapping(value = "/{reader}")
     public String addToReadingList(@PathVariable(value="reader") String reader,Book book) {
+
         book.setReader(reader);
         repository.save(book);
         return "redirect:/{reader}";

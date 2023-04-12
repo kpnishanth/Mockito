@@ -28,9 +28,11 @@ public class BookControllerTests {
     BookRepository bookRepository;
     @Spy
     BookController bookController = new BookController(bookRepository);
-
+    @Mock
+Model model;
     @Test
     public void argCapturetest() {
+
         Book book1 = new Book();
         book1.setReader("Nishanth");
         book1.setTitle("Spring in Action");
@@ -39,7 +41,7 @@ public class BookControllerTests {
         List<Book> bookList = Arrays.asList(book1);
         ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
         when(bookRepository.findByReader(argumentCaptor.capture())).thenReturn(bookList);
-        bookController.readersBooks("Nishanth");
+        bookController.readersBooks("Nishanth",model);
         assertThat(argumentCaptor.getValue()).isEqualTo("Nishanth");
         bookRepository.findAll();
         verifyNoMoreInteractions(bookRepository);
@@ -53,7 +55,7 @@ public class BookControllerTests {
     public void spyTest() {
 
 
-        when(bookController.readersBooks("nishanth")).thenReturn("Test");
+        when(bookController.readersBooks("nishanth",model)).thenReturn("Test");
     }
 
     @Test
@@ -73,7 +75,7 @@ public class BookControllerTests {
                 return null;
             }
         }).thenReturn(bookList);
-        bookController.readersBooks("Nisanth");
+        bookController.readersBooks("Nisanth",model);
         assertThat(argumentCaptor.getValue()).isEqualTo("Nishanth");
     }
 
@@ -87,7 +89,7 @@ public class BookControllerTests {
         List<Book> bookList = Arrays.asList(book1);
         Model model = null;
         when(bookRepository.findByReader("Nishanth")).thenReturn(bookList);
-        assertEquals(bookController.readersBooks("Nishanth"), "readingList");
+        assertEquals(bookController.readersBooks("Nishanth",model), "readingList");
 
     }
 
